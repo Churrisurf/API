@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 // Conexión a la base de datos
-mongoose.connect('mongodb+srv://JordanTorunarijna:<db_password>@michaelolise.xtapt6v.mongodb.net/?retryWrites=true&w=majority&appName=MichaelOlise', {
+mongoose.connect('mongodb+srv://JordanTorunarijna:JordanTorunarijna@michaelolise.xtapt6v.mongodb.net/?retryWrites=true&w=majority&appName=MichaelOlise', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
