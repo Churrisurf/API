@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 mongoose.connect('mongodb+srv://constrasenadepatatas:puredepatatas@ufv-calidad.8i5b4pw.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true
+  ssl: true,
+  sslValidate: true
 });
 
 // Definir el esquema y modelo de usuario

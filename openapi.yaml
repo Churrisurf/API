@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: API de Mensajes
+  description: API para guardar y recuperar mensajes en MongoDB
+  version: 1.0.0
+servers:
+  - url: https://api-test-sntk.onrender.com
+paths:
+  /save:
+    post:
+      summary: Guardar un nuevo mensaje
+      operationId: guardarMensaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                texto:
+                  type: string
+                autor:
+                  type: string
+      responses:
+        '201':
+          description: Mensaje guardado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+  /retrieve:
+    get:
+      summary: Recuperar todos los mensajes
+      operationId: obtenerMensajes
+      responses:
+        '200':
+          description: Lista de mensajes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    texto:
+                      type: string
+                    autor:
+                      type: string
