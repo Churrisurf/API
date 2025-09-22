@@ -6,8 +6,6 @@ const bodyParser = require('body-parser');
 mongoose.connect('mongodb+srv://JordanTorunarijna:<db_password>@michaelolise.xtapt6v.mongodb.net/?retryWrites=true&w=majority&appName=MichaelOlise', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  ssl: true,
-  sslValidate: true
 });
 
 // Definir el esquema y modelo de usuario
