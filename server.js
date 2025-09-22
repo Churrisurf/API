@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 // Conexión a la base de datos
-mongoose.connect('mongodb+srv://constrasenadepatatas:puredepatatas@ufv-calidad.8i5b4pw.mongodb.net/test/usuarios?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
   ssl: true,
   sslValidate: true
 });
