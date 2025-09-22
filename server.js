@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 // Conexión a la base de datos
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect('mongodb+srv://JordanTorunarijna:<db_password>@michaelolise.xtapt6v.mongodb.net/?retryWrites=true&w=majority&appName=MichaelOlise', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   ssl: true,
@@ -49,5 +49,5 @@ app.get('/retrieve', async (req, res) => {
 
 // Iniciar servidor
 app.listen(3000, () => {
-  console.log('Servidor escuchando en puerto 3000');
+  console.log('Hasta aqui bien');
 });
