@@ -4,48 +4,91 @@ const bodyParser = require('body-parser');
 
 // Conexión a la base de datos
 mongoose.connect('mongodb+srv://JordanTorunarijna:ChristophBaumgartner@michaelolise.xtapt6v.mongodb.net/?retryWrites=true&w=majority&appName=MichaelOlise', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 
-// Definir el esquema y modelo de usuario
-const UsuarioSchema = new mongoose.Schema({
-  nombre: String,
-  email: { type: String, unique: true },
-  edad: Number
+// Esquema y modelo de mensaje
+const MessageSchema = new mongoose.Schema({
+    nombre: { type: String, unique: true },
+    contenido: String,
 });
-const Usuario = mongoose.model('Usuario', UsuarioSchema);
+const Message = mongoose.model('Message', MessageSchema);
 
 const app = express();
 app.use(bodyParser.json());
 
-// Endpoint POST /save para guardar datos de usuario
-app.post('/save', async (req, res) => {
-  try {
-    const { nombre, email, edad } = req.body;
-    const usuario = new Usuario({ nombre, email, edad });
-    await usuario.save();
-    res.status(201).json({ mensaje: 'Usuario guardado', usuario });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+// Claves únicas por método
+const CLAVES = {
+    POST: 'clave_post',
+    GET: 'clave_get',
+    DELETE: 'clave_delete'
+};
+
+// POST /message
+app.post('/message', async (req, res) => {
+    const { keyword, nombre, contenido } = req.body;
+    if (keyword !== CLAVES.POST) {
+        return res.status(403).json({ mensaje: 'Clave incorrecta para POST' });
+    }
+    try {
+        const new_message = new Message({ nombre, contenido });
+        await new_message.save();
+        res.status(201).json({ mensaje: 'Mensaje guardado', new_message });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
-// Endpoint GET /retrieve para conseguir datos de usuario por email
-app.get('/retrieve', async (req, res) => {
-  try {
-    const { email } = req.query;
-    const usuario = await Usuario.findOne({ email });
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+// GET /message
+app.get('/message', async (req, res) => {
+    const { keyword, nombre } = req.query;
+    if (keyword !== CLAVES.GET) {
+        return res.status(403).json({ mensaje: 'Clave incorrecta para GET' });
     }
-    res.json(usuario);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    try {
+        const new_message = await Message.findOne({ nombre });
+        if (!new_message) {
+            return res.status(404).json({ mensaje: 'Mensaje no encontrado' });
+        }
+        res.json(new_message);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// DELETE /message
+app.delete('/message', async (req, res) => {
+    const { keyword, nombre } = req.query;
+    if (keyword !== CLAVES.DELETE) {
+        return res.status(403).json({ mensaje: 'Clave incorrecta para eliminar mensaje' });
+    }
+    try {
+        const result = await Message.deleteOne({ nombre });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ mensaje: 'Mensaje no encontrado' });
+        }
+        res.json({ mensaje: 'Mensaje eliminado' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// DELETE /messages
+app.delete('/messages', async (req, res) => {
+    const { keyword } = req.query;
+    if (keyword !== CLAVES.DELETE) {
+        return res.status(403).json({ mensaje: 'Clave incorrecta para eliminar todos los mensajes' });
+    }
+    try {
+        await Message.deleteMany({});
+        res.json({ mensaje: 'Todos los mensajes eliminados' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
 // Iniciar servidor
 app.listen(3000, () => {
-  console.log('Hasta aqui bien');
+    console.log('Servidor iniciado');
 });
