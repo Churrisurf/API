@@ -30,6 +30,19 @@ paths:
               required:
                 - keyword
                 - nombre
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyword:
+                  type: string
+                nombre:
+                  type: string
+                contenido:
+                  type: string
+              required:
+                - keyword
+                - nombre
       responses:
         '201':
           description: Mensaje guardado correctamente
