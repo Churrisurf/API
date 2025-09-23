@@ -24,9 +24,6 @@ paths:
                 edad:
                   type: integer
                   format: int32
-                __v:
-                  type: integer
-                  format: int32
               required:
                 - nombre
                 - email
