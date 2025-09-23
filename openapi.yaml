@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
-  title: API de Mensajes
-  description: API para guardar y recuperar mensajes en MongoDB
+  title: API de Usuarios
+  description: API para guardar y recuperar usuarios en MongoDB
   version: 1.0.0
 servers:
-  - url: https://api-test-sntk.onrender.com
+  - url: https://couto.onrender.com
 paths:
   /save:
     post:
-      summary: Guardar un nuevo mensaje
-      operationId: guardarMensaje
+      summary: Guardar un nuevo usuario
+      operationId: guardarUsuario
       requestBody:
         required: true
         content:
@@ -17,32 +17,81 @@ paths:
             schema:
               type: object
               properties:
-                texto:
+                nombre:
                   type: string
-                autor:
+                email:
                   type: string
+                edad:
+                  type: integer
+                  format: int32
+                __v:
+                  type: integer
+                  format: int32
+              required:
+                - nombre
+                - email
+                - edad
       responses:
         '201':
-          description: Mensaje guardado correctamente
+          description: Usuario guardado correctamente
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  mensaje:
+                    type: string
+                  usuario:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      nombre:
+                        type: string
+                      email:
+                        type: string
+                      edad:
+                        type: integer
+                        format: int32
+                      __v:
+                        type: integer
+                        format: int32
   /retrieve:
     get:
-      summary: Recuperar todos los mensajes
-      operationId: obtenerMensajes
+      summary: Recuperar usuario por email
+      operationId: obtenerUsuario
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Lista de mensajes
+          description: Usuario encontrado
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    texto:
-                      type: string
-                    autor:
-                      type: string
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  nombre:
+                    type: string
+                  email:
+                    type: string
+                  edad:
+                    type: integer
+                    format: int32
+                  __v:
+                    type: integer
+                    format: int32
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
