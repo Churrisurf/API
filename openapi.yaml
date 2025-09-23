@@ -22,8 +22,6 @@ paths:
                 email:
                   type: string
                 edad:
-                  type: integer
-                  format: int32
               required:
                 - nombre
                 - email
@@ -48,8 +46,6 @@ paths:
                       email:
                         type: string
                       edad:
-                        type: integer
-                        format: int32
   /retrieve:
     get:
       summary: Recuperar usuario por email
@@ -75,11 +71,6 @@ paths:
                   email:
                     type: string
                   edad:
-                    type: integer
-                    format: int32
-                  __v:
-                    type: integer
-                    format: int32
         '404':
           description: Usuario no encontrado
           content:
