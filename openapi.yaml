@@ -1,36 +1,38 @@
 openapi: 3.0.0
 info:
-  title: API de Usuarios
-  description: API para guardar y recuperar usuarios en MongoDB
+  title: API de Mensajes
+  description: API para guardar, recuperar y eliminar mensajes en MongoDB. Soporta texto y archivos PDF.
   version: 1.0.0
 servers:
   - url: https://couto.onrender.com
+
 paths:
-  /save:
+  /message:
     post:
-      summary: Guardar un nuevo usuario
-      operationId: guardarUsuario
+      summary: Guardar un nuevo mensaje (texto o PDF)
+      operationId: guardarMensaje
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
+                keyword:
+                  type: string
                 nombre:
                   type: string
-                email:
+                contenido:
                   type: string
-                edad:
-                  type: integer
-                  format: int32
+                pdf:
+                  type: string
+                  format: binary
               required:
+                - keyword
                 - nombre
-                - email
-                - edad
       responses:
         '201':
-          description: Usuario guardado correctamente
+          description: Mensaje guardado correctamente
           content:
             application/json:
               schema:
@@ -38,47 +40,97 @@ paths:
                 properties:
                   mensaje:
                     type: string
-                  usuario:
+                  new_message:
                     type: object
-                    properties:
-                      _id:
-                        type: string
-                      nombre:
-                        type: string
-                      email:
-                        type: string
-                      edad:
-                        type: integer
-                        format: int32
-  /retrieve:
+
     get:
-      summary: Recuperar usuario por email
-      operationId: obtenerUsuario
+      summary: Recuperar un mensaje por nombre
+      operationId: obtenerMensaje
       parameters:
-        - name: email
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: nombre
           in: query
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Usuario encontrado
+          description: Mensaje encontrado
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Mensaje no encontrado
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  _id:
+                  mensaje:
                     type: string
-                  nombre:
+
+    delete:
+      summary: Eliminar un mensaje por nombre
+      operationId: eliminarMensaje
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: nombre
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Mensaje eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
                     type: string
-                  email:
-                    type: string
-                  edad:
-                    type: integer
-                    format: int32
         '404':
-          description: Usuario no encontrado
+          description: Mensaje no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+
+  /messages:
+    delete:
+      summary: Eliminar todos los mensajes (requiere clave)
+      operationId: eliminarTodos
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Todos los mensajes eliminados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '403':
+          description: Clave incorrecta
           content:
             application/json:
               schema:

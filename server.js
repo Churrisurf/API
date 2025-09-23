@@ -10,8 +10,10 @@ mongoose.connect('mongodb+srv://JordanTorunarijna:ChristophBaumgartner@michaelol
 
 // Esquema y modelo de mensaje
 const MessageSchema = new mongoose.Schema({
-    nombre: { type: String, unique: true },
-    contenido: String,
+  nombre: { type: String, unique: true },
+  contenido: Buffer,
+  mimeType: String,
+  filename: String // ← nuevo campo
 });
 const Message = mongoose.model('Message', MessageSchema);
 
@@ -25,37 +27,58 @@ const CLAVES = {
     DELETE: 'clave_delete'
 };
 
-// POST /message
-app.post('/message', async (req, res) => {
-    const { keyword, nombre, contenido } = req.body;
-    if (keyword !== CLAVES.POST) {
-        return res.status(403).json({ mensaje: 'Clave incorrecta para POST' });
+// MULTER
+
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
+
+// POST /message para guardar mensajes (texto o PDF)
+app.post('/message', upload.single('pdf'), async (req, res) => {
+  try {
+    const { nombre, contenido } = req.body;
+
+    let messageData = { nombre };
+
+    if (req.file) {
+      // Si se sube un PDF
+      messageData.contenido = req.file.buffer;
+      messageData.mimeType = req.file.mimetype;
+    } else if (contenido) {
+      // Si es texto
+      messageData.contenido = Buffer.from(contenido, 'utf-8');
+      messageData.mimeType = 'text/plain';
+    } else {
+      return res.status(400).json({ error: 'Debes enviar un mensaje de texto o un archivo PDF.' });
     }
-    try {
-        const new_message = new Message({ nombre, contenido });
-        await new_message.save();
-        res.status(201).json({ mensaje: 'Mensaje guardado', new_message });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+
+    const new_message = new Message(messageData);
+    await new_message.save();
+    res.status(201).json({ mensaje: 'Mensaje guardado', new_message });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
+
 // GET /message
+
 app.get('/message', async (req, res) => {
-    const { keyword, nombre } = req.query;
-    if (keyword !== CLAVES.GET) {
-        return res.status(403).json({ mensaje: 'Clave incorrecta para GET' });
+  try {
+    const { nombre } = req.query;
+    const mensaje = await Message.findOne({ nombre });
+    if (!mensaje) {
+      return res.status(404).json({ mensaje: 'Mensaje no encontrado' });
     }
-    try {
-        const new_message = await Message.findOne({ nombre });
-        if (!new_message) {
-            return res.status(404).json({ mensaje: 'Mensaje no encontrado' });
-        }
-        res.json(new_message);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+    res.set('Content-Type', mensaje.mimeType || 'text/plain');
+    res.send(mensaje.contenido);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
+
 
 // DELETE /message
 app.delete('/message', async (req, res) => {
