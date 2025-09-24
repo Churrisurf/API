@@ -11,7 +11,7 @@ mongoose.connect('mongodb+srv://JordanTorunarijna:ChristophBaumgartner@michaelol
 // Esquema y modelo de mensaje
 const MessageSchema = new mongoose.Schema({
   nombre: { type: String, unique: true },
-  contenido: Buffer
+  contenido: String
 });
 const Message = mongoose.model('Message', MessageSchema);
 
@@ -39,7 +39,7 @@ app.post('/message', async (req, res) => {
 
     const messageData = {
       nombre,
-      contenido: Buffer.from(contenido, 'utf-8')
+      contenido
     };
 
     const new_message = new Message(messageData);

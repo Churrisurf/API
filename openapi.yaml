@@ -17,6 +17,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - keyword
+                - nombre
+                - contenido
               properties:
                 keyword:
                   type: string
@@ -27,10 +31,6 @@ paths:
                 contenido:
                   type: string
                   description: Contenido del mensaje en texto plano
-              required:
-                - keyword
-                - nombre
-                - contenido
       responses:
         '201':
           description: Mensaje guardado correctamente
@@ -43,6 +43,7 @@ paths:
                     type: string
                   new_message:
                     type: object
+                    additionalProperties: true
         '403':
           description: Clave incorrecta
           content:
@@ -82,9 +83,12 @@ paths:
         '200':
           description: Mensaje encontrado
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  contenido:
+                    type: string
         '403':
           description: Clave incorrecta
           content:
@@ -123,3 +127,68 @@ paths:
           schema:
             type: string
           description: Clave de autorización para eliminar el mensaje
+        - name: nombre
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Identificador único del mensaje
+      responses:
+        '200':
+          description: Mensaje eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '403':
+          description: Clave incorrecta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '404':
+          description: Mensaje no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+
+  /messages:
+    delete:
+      summary: Eliminar todos los mensajes (requiere clave)
+      operationId: eliminarTodos
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Clave de autorización para eliminar todos los mensajes
+      responses:
+        '200':
+          description: Todos los mensajes eliminados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '403':
+          description: Clave incorrecta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
